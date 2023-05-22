@@ -1,7 +1,6 @@
 {
   "name": "45-2nd-assemble-backend",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
@@ -18,5 +17,6 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.3.1",
     "typeorm": "^0.3.16"
-  }
+  },
+  "description": ""
 }
