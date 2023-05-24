@@ -6,7 +6,7 @@ CREATE TABLE courts (
     parking_id INT NOT NULL,
     rental_equip BOOLEAN NOT NULL,
     shower_facility BOOLEAN NOT NULL,
-    amenities BOOLEAN NOT NULL,
+    has_amenities BOOLEAN NOT NULL,
     district_id INT NOT NULL,
     court_type_id INT NOT NULL,
     owner_id INT NOT NULL,
