@@ -18,6 +18,24 @@ const getHostReservations = catchAsync(async (req, res) => {
   return res.status(200).json({ data: reservation });
 });
 
+const completeReservation = catchAsync(async (req, res) => {
+  const user = req.user;
+  const { courtId, timeSlot, isMatch, paymentKey, amount, orderId } = req.body;
+
+  const reservation = await reservationService.completeReservation(
+    user.id,
+    courtId,
+    timeSlot,
+    parseInt(isMatch),
+    paymentKey,
+    parseInt(amount),
+    orderId
+  );
+
+  return res.status(201).json({ reservation: reservation });
+});
+
 module.exports = {
   getHostReservations,
+  completeReservation,
 };

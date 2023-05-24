@@ -5,6 +5,7 @@ const truncateTables = async (tables) => {
 
   for (let table of tables) {
     await dataSource.query(`TRUNCATE table ${table}`);
+    await dataSource.query(`ALTER TABLE ${table} AUTO_INCREMENT = 1`);
   }
 
   await dataSource.query(`SET FOREIGN_KEY_CHECKS=1`);
