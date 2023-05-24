@@ -13,6 +13,149 @@ const matchStatusEnum = Object.freeze({
   CANCELED: 3,
 });
 
+const completeReservation = async (
+  userId,
+  reservationNumber,
+  courtId,
+  timeSlot,
+  isMatch,
+  response
+) => {
+  const queryRunner = dataSource.createQueryRunner();
+
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
+  const paymentStatusId = isMatch
+    ? paymentStatusEnum.PENDING
+    : paymentStatusEnum.COMPLETE;
+
+  try {
+    // check if court is available to use
+    const [available] = await queryRunner.query(
+      `
+        SELECT ts.is_available
+            FROM time_slots ts
+            WHERE ts.court_id = ? AND ts.time_slot = ?
+      `,
+      [courtId, timeSlot]
+    );
+
+    if (!available.is_available) {
+      const error = new Error('COURT_IS_ALREADY_BOOKED');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // change availability
+    await queryRunner.query(
+      `
+        UPDATE time_slots
+            SET is_available = 0
+            WHERE court_id = ? AND time_slot = ?
+        `,
+      [courtId, timeSlot]
+    );
+
+    // create reservation
+    const result = await queryRunner.query(
+      `
+          INSERT INTO reservations (
+              court_id,
+              reservation_number,
+              time_slot,
+              is_match,
+              payment_status_id,
+              host_user_id
+              ) VALUES (
+            ?, ?, ?, ?, ?, ?
+          )
+      `,
+      [courtId, reservationNumber, timeSlot, isMatch, paymentStatusId, userId]
+    );
+
+    // create payments
+    await queryRunner.query(
+      `
+            INSERT INTO payments (
+              reservation_id,
+              user_id,
+              is_match,
+              payment_info
+            ) VALUES (?, ?, ?, ?)
+            `,
+      [result.insertId, userId, isMatch, JSON.stringify(response)]
+    );
+
+    // create match
+    if (isMatch) {
+      await queryRunner.query(
+        `
+      INSERT INTO matches (
+        reservation_id,
+        match_status_id
+        ) VALUES (?, ?)
+        `,
+        [result.insertId, matchStatusEnum.UNMATCHED]
+      );
+    }
+
+    const [reservation] = await queryRunner.query(
+      `SELECT 
+        r.id,
+        r.reservation_number reservationNumber,
+        r.time_slot timeSlot,
+        r.is_match isMatch,
+        ps.status paymentStatus,
+        r.host_user_id hostUserId,
+        (SELECT JSON_OBJECT (
+          "courtId", c.id,
+          "name", c.name,
+          "address", c.address,
+          "longitude", c.longitude,
+          "latitude", c.latitude,
+          "price", c.price,
+          "rentalEquip", c.rental_equip,
+          "showerFacility", c.shower_facility,
+          "hasAmenities", c.has_amenities,
+          "isExclusive", c.is_exclusive,
+          "parking", p.parking,
+          "district", d.district,
+          "region", r.region,
+          "description", c.description,
+          "courtImages", (SELECT JSON_ARRAYAGG(JSON_OBJECT("courtImage", court_image)) FROM court_images WHERE court_id = c.id)
+          ) 
+          FROM courts c
+          JOIN parkings p ON p.id = c.parking_id
+          JOIN districts d ON d.id = c.district_id
+          LEFT JOIN regions r ON r.id = d.region_id
+          WHERE c.id = r.court_id
+      ) court,
+      p.payment_info paymentInfo
+      FROM reservations r
+      JOIN payment_status ps ON r.payment_status_id = ps.id
+      JOIN payments p ON p.reservation_id = ?
+      WHERE r.id = ?
+        `,
+      [result.insertId, result.insertId]
+    );
+
+    await queryRunner.commitTransaction();
+
+    return reservation;
+  } catch (error) {
+    await queryRunner.rollbackTransaction();
+
+    error = new Error(error.message || 'DATABASE_CONNECTION_ERROR');
+    error.statusCode = 400;
+    throw error;
+  } finally {
+    if (queryRunner) {
+      await queryRunner.release();
+    }
+  }
+};
+
 const getHostReservations = async (userId, currentTime, isExpired, isMatch) => {
   try {
     const reservationExpired = reservationExpiredBuilder(isExpired);
@@ -146,4 +289,9 @@ const cancelReservation = async (currentTime) => {
   }
 };
 
-module.exports = { getHostReservations, getMatchHostInfo, cancelReservation };
+module.exports = {
+  getHostReservations,
+  completeReservation,
+  getMatchHostInfo,
+  cancelReservation,
+};
