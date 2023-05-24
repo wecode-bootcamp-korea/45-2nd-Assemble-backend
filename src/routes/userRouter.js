@@ -7,6 +7,7 @@ const { validateToken } = require('../middlewares/auth');
 
 router.get('/kakaologin', userController.kakaologin);
 router.get('', validateToken, userController.getUserById);
+router.patch('', validateToken, userController.updateUserInfo);
 
 module.exports = {
   router,

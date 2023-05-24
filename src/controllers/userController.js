@@ -23,7 +23,23 @@ const getUserById = catchAsync(async (req, res) => {
   return res.status(200).json({ userInfo });
 });
 
+const updateUserInfo = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const { name, gender, level } = req.body;
+
+  if (!name || !gender || !level) {
+    const error = new Error('KEY_ERROR');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  await userService.updateUserInfo(userId, name, gender, level);
+
+  return res.status(200).json({ message: 'MODIFY SUCCESS' });
+});
+
 module.exports = {
   kakaologin,
   getUserById,
+  updateUserInfo,
 };
