@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+
 const userService = require('../services/userService');
 
 const validateToken = async (req, res, next) => {
@@ -12,14 +13,18 @@ const validateToken = async (req, res, next) => {
     }
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);
+
     const user = await userService.getUserById(payload.id);
 
     if (!user) {
       const err = new Error('INVALID_USER');
       err.statusCode = 401;
+
       throw err;
     }
+
     req.user = user;
+
     next();
   } catch (err) {
     next(err);

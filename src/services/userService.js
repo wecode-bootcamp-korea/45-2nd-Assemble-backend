@@ -55,12 +55,15 @@ const kakaologin = async (code) => {
 };
 
 const getUserById = async (userId) => {
-  const getUserById = await userDao.getUserById(userId);
+  return userDao.getUserById(userId);
+};
 
-  return getUserById;
+const updateUserInfo = async (userId, name, gender, level) => {
+  return userDao.updateUserInfo(userId, name, gender, level);
 };
 
 module.exports = {
   kakaologin,
   getUserById,
+  updateUserInfo,
 };

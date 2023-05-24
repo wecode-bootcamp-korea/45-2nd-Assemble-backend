@@ -1,5 +1,11 @@
 const { dataSource } = require('./dataSource');
 
+const levelEnum = Object.freeze({
+  ONE: 1,
+  TWO: 2,
+  THREE: 3,
+});
+
 const getUserByKakaoId = async (kakaoId) => {
   try {
     return await dataSource.query(
@@ -65,8 +71,21 @@ const getUserById = async (userId) => {
   }
 };
 
-module.exports = {
-  getUserByKakaoId,
-  createUser,
-  getUserById,
+const updateUserInfo = async (userId, name, gender, level) => {
+  try {
+    await dataSource.query(
+      `
+      UPDATE users
+        SET name = ?, gender = ?, level_id = ?
+      WHERE id = ? 
+        `,
+      [name, gender, levelEnum.level, userId]
+    );
+  } catch (error) {
+    error = new Error('DATABASE_CONNECTION_ERROR');
+    error.statusCode = 400;
+    throw error;
+  }
 };
+
+module.exports = { getUserByKakaoId, getUserById, createUser, updateUserInfo };
