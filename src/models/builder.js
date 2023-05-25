@@ -116,9 +116,18 @@ function orderByBuilder(orderBy) {
   return orderQuery;
 }
 
+function reservationExpiredBuilder(isExpired) {
+  if (parseInt(isExpired)) {
+    return `AND r.time_slot < ?`;
+  }
+
+  return `AND r.time_slot > ?`;
+}
+
 module.exports = {
   courtFilterBuilder,
   matchFilterBuilder,
   limitBuilder,
   orderByBuilder,
+  reservationExpiredBuilder,
 };
