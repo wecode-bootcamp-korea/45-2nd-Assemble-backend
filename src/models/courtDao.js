@@ -80,6 +80,17 @@ const getCourtList = async (
   }
 };
 
+const getCourtById = async () => {
+  try {
+  } catch (error) {
+    console.log(error);
+    error = new Error('FAILED_TO_BUILD_FILTER_QUERY');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
 module.exports = {
   getCourtList,
+  getCourtById,
 };
