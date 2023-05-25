@@ -32,6 +32,11 @@ const getCourtList = async (
   return getCourtList;
 };
 
+const getHostingCourts = async (userId) => {
+  return await courtDao.getHostingCourts(userId);
+};
+
 module.exports = {
   getCourtList,
+  getHostingCourts,
 };
