@@ -15,4 +15,15 @@ const kakaologin = catchAsync(async (req, res) => {
   return res.status(200).json({ accessToken: accessToken });
 });
 
-module.exports = { kakaologin };
+const getUserById = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+
+  const userInfo = await userService.getUserById(userId);
+
+  return res.status(200).json({ userInfo });
+});
+
+module.exports = {
+  kakaologin,
+  getUserById,
+};

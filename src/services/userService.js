@@ -54,4 +54,13 @@ const kakaologin = async (code) => {
   return accessToken;
 };
 
-module.exports = { kakaologin };
+const getUserById = async (userId) => {
+  const getUserById = await userDao.getUserById(userId);
+
+  return getUserById;
+};
+
+module.exports = {
+  kakaologin,
+  getUserById,
+};
