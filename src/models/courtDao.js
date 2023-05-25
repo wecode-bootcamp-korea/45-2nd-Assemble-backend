@@ -10,6 +10,7 @@ const getCourtList = async (
   showerFacility,
   hasAmenities,
   courtTypeId,
+  courtId,
   limit,
   offset,
   orderBy
@@ -18,7 +19,7 @@ const getCourtList = async (
     const baseQuery = `
     SELECT DISTINCT
         c.id,
-        c.price,
+        CAST(c.price AS DECIMAL(10,0)) AS price,
         c.address,
         c.longitude,
         c.latitude,
@@ -64,7 +65,8 @@ const getCourtList = async (
       rentalEquip,
       showerFacility,
       hasAmenities,
-      courtTypeId
+      courtTypeId,
+      courtId
     );
     const sortQuery = builder.orderByBuilder(orderBy);
     const limitQuery = builder.limitBuilder(limit, offset);
@@ -82,5 +84,4 @@ const getCourtList = async (
 
 module.exports = {
   getCourtList,
-  getCourtById,
 };
