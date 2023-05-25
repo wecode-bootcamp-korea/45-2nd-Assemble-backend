@@ -6,7 +6,8 @@ function filterBuilder(
   rentalEquip,
   showerFacility,
   hasAmenities,
-  courtTypeId
+  courtTypeId,
+  courtId
 ) {
   let conditionArr = [];
 
@@ -60,6 +61,10 @@ function filterBuilder(
     let courtTypeArr = [];
     courtTypeArr.push(courtTypeId);
     conditionArr.push(`c.court_type_id = ${courtTypeId}`);
+  }
+
+  if (courtId) {
+    conditionArr.push(`c.id = ${courtId}`);
   }
 
   let whereCondition = '';

@@ -11,6 +11,7 @@ const getCourtList = catchAsync(async (req, res) => {
     showerFacility,
     hasAmenities,
     courtTypeId,
+    courtId,
     limit,
     offset,
     orderBy,
@@ -25,6 +26,7 @@ const getCourtList = catchAsync(async (req, res) => {
     showerFacility,
     hasAmenities,
     courtTypeId,
+    courtId,
     limit,
     offset,
     orderBy

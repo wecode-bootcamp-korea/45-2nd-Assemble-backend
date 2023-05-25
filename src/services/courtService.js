@@ -9,6 +9,7 @@ const getCourtList = async (
   showerFacility,
   hasAmenities,
   courtTypeId,
+  courtId,
   offset,
   limit,
   orderBy
@@ -22,6 +23,7 @@ const getCourtList = async (
     showerFacility,
     hasAmenities,
     courtTypeId,
+    courtId,
     offset,
     limit,
     orderBy
