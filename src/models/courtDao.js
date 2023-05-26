@@ -19,6 +19,7 @@ const getCourtList = async (
     const baseQuery = `
     SELECT DISTINCT
         c.id,
+        c.name,
         CAST(c.price AS DECIMAL(10,0)) AS price,
         c.address,
         c.longitude,
@@ -57,7 +58,7 @@ const getCourtList = async (
     LEFT JOIN regions r ON r.id = d.region_id
     LEFT JOIN court_types ct ON c.court_type_id = ct.id
     `;
-    const whereCondition = builder.filterBuilder(
+    const whereCondition = builder.courtFilterBuilder(
       districtId,
       date,
       time,

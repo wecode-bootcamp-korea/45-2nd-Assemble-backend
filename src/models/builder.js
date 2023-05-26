@@ -1,4 +1,4 @@
-function filterBuilder(
+function courtFilterBuilder(
   districtId,
   date,
   time,
@@ -74,6 +74,20 @@ function filterBuilder(
   return whereCondition;
 }
 
+function matchFilterBuilder(date) {
+  let conditionArr = [];
+
+  if (date) {
+    conditionArr.push(` AND (DATE(r.time_slot) = ${date})`);
+  }
+
+  let whereCondition = '';
+  if (conditionArr.length > 0) {
+    whereCondition = `${conditionArr.join(' AND ')}`;
+  }
+  return whereCondition;
+}
+
 function limitBuilder(limit, offset) {
   if (!limit) {
     limit = 12;
@@ -103,7 +117,8 @@ function orderByBuilder(orderBy) {
 }
 
 module.exports = {
-  filterBuilder,
+  courtFilterBuilder,
+  matchFilterBuilder,
   limitBuilder,
   orderByBuilder,
 };
