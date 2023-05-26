@@ -10,8 +10,7 @@ const getCourtList = async (
   hasAmenities,
   courtTypeId,
   courtId,
-  offset,
-  limit,
+  page,
   orderBy
 ) => {
   const getCourtList = await courtDao.getCourtList(
@@ -24,8 +23,7 @@ const getCourtList = async (
     hasAmenities,
     courtTypeId,
     courtId,
-    offset,
-    limit,
+    page,
     orderBy
   );
 

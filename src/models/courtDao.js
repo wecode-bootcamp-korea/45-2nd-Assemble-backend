@@ -11,8 +11,7 @@ const getCourtList = async (
   hasAmenities,
   courtTypeId,
   courtId,
-  limit,
-  offset,
+  page,
   orderBy
 ) => {
   try {
@@ -71,7 +70,7 @@ const getCourtList = async (
       courtId
     );
     const sortQuery = builder.orderByBuilder(orderBy);
-    const limitQuery = builder.limitBuilder(limit, offset);
+    const limitQuery = builder.limitBuilder(page);
     const rooms = await dataSource.query(
       `${baseQuery} ${whereCondition} ${sortQuery} ${limitQuery}`
     );

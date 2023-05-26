@@ -1,20 +1,20 @@
 const matchDao = require('../models/matchDao');
 
-const getMatchList = async (date, limit, offset) => {
-  const getMatchList = await matchDao.getMatchList(date, limit, offset);
+const getMatchList = async (date, page, limit) => {
+  const getMatchList = await matchDao.getMatchList(date, page, limit);
 
   return getMatchList;
 };
 
-const getMatchListForUser = async (userId, date, limit, offset) => {
+const getMatchListForUser = async (userId, date, page, limit) => {
   const [getUserLevel] = await matchDao.getUserLevel(userId);
   const userLevel = getUserLevel.level;
 
   const getMatchListForUser = await matchDao.getMatchListForUser(
     userLevel,
     date,
-    limit,
-    offset
+    page,
+    limit
   );
 
   return getMatchListForUser;

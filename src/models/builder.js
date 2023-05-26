@@ -88,14 +88,12 @@ function matchFilterBuilder(date) {
   return whereCondition;
 }
 
-function limitBuilder(limit, offset) {
-  if (!limit) {
-    limit = 12;
-  }
+function limitBuilder(page, limit) {
+  if (!page) page = 1;
 
-  if (!offset) {
-    offset = 0;
-  }
+  if (!limit) limit = 20;
+
+  let offset = (page - 1) * 20;
 
   return `LIMIT ${limit} OFFSET ${offset}`;
 }
