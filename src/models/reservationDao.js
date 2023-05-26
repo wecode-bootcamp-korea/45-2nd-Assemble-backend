@@ -1,6 +1,18 @@
 const { dataSource } = require('./dataSource');
 const { reservationExpiredBuilder } = require('./builder');
 
+const paymentStatusEnum = Object.freeze({
+  PENDING: 1,
+  COMPLETE: 2,
+  CANCELED: 3,
+});
+
+const matchStatusEnum = Object.freeze({
+  UNMATCHED: 1,
+  MATCHED: 2,
+  CANCELED: 3,
+});
+
 const getHostReservations = async (userId, currentTime, isExpired, isMatch) => {
   try {
     const reservationExpired = reservationExpiredBuilder(isExpired);
@@ -79,4 +91,59 @@ const getMatchHostInfo = async (matchId) => {
   }
 };
 
-module.exports = { getHostReservations, getMatchHostInfo };
+const cancelReservation = async (currentTime) => {
+  const queryRunner = dataSource.createQueryRunner();
+
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
+  try {
+    // check if (reservation wants match & haven't matched yet)
+    const reservationsToCancel = await queryRunner.query(
+      `
+      SELECT id, is_match, payment_status_id
+        FROM reservations
+        WHERE payment_status_id = 1 AND is_match = 1 AND time_slot < ?
+      `,
+      [currentTime]
+    );
+
+    const cancelIds = reservationsToCancel.map((reservation) => reservation.id);
+
+    // payment status to calceled
+    await queryRunner.query(
+      `
+      UPDATE reservation 
+      SET payment_status_id = ?
+      WHERE id (?)
+      `,
+      [paymentStatusEnum.CANCELED, cancelIds]
+    );
+
+    // match status to calceled
+    await queryRunner.query(
+      `
+      UPDATE matches 
+      SET match_status_id = ?
+      WHERE reservation_id (?)
+      `,
+      [matchStatusEnum.CANCELED, cancelIds]
+    );
+
+    // todo: payment cancel
+
+    await queryRunner.commitTransaction();
+  } catch (error) {
+    await queryRunner.rollbackTransaction();
+
+    error = new Error('DATABASE_CONNECITON_ERROR');
+    error.statusCode = 400;
+    throw error;
+  } finally {
+    if (queryRunner) {
+      await queryRunner.release();
+    }
+  }
+};
+
+module.exports = { getHostReservations, getMatchHostInfo, cancelReservation };
