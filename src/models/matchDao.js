@@ -21,7 +21,7 @@ const getUserLevel = async (userId) => {
   }
 };
 
-const getMatchList = async (date, limit, offset) => {
+const getMatchList = async (date, page, limit) => {
   try {
     const baseQuery = `
       SELECT
@@ -76,7 +76,7 @@ const getMatchList = async (date, limit, offset) => {
     `;
     const fixedWhereCondition = `WHERE ps.id = 1 AND r.is_match = 1`;
     const whereCondition = builder.matchFilterBuilder(date);
-    const limitQuery = builder.limitBuilder(limit, offset);
+    const limitQuery = builder.limitBuilder(page, limit);
 
     const rooms = await dataSource.query(
       `${baseQuery} ${fixedWhereCondition} ${whereCondition} ${limitQuery}`
@@ -90,7 +90,7 @@ const getMatchList = async (date, limit, offset) => {
   }
 };
 
-const getMatchListForUser = async (userLevel, date, limit, offset) => {
+const getMatchListForUser = async (userLevel, date, page, limit) => {
   try {
     const baseQuery = `
       SELECT
@@ -145,7 +145,7 @@ const getMatchListForUser = async (userLevel, date, limit, offset) => {
     `;
     const fixedWhereCondition = `WHERE ps.id = 1 AND r.is_match = 1 AND l.level = ${userLevel}`;
     const whereCondition = builder.matchFilterBuilder(date);
-    const limitQuery = builder.limitBuilder(limit, offset);
+    const limitQuery = builder.limitBuilder(page, limit);
 
     const rooms = await dataSource.query(
       `${baseQuery} ${fixedWhereCondition} ${whereCondition} ${limitQuery}`
