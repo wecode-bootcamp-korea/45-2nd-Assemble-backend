@@ -20,7 +20,12 @@ const getMatchListForUser = async (userId, date, limit, offset) => {
   return getMatchListForUser;
 };
 
+const getGuestMatches = async (userId, currentTime, isExpired) => {
+  return await matchDao.getGuestMatches(userId, currentTime, isExpired);
+};
+
 module.exports = {
   getMatchList,
   getMatchListForUser,
+  getGuestMatches,
 };
