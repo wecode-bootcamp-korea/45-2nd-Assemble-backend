@@ -29,18 +29,17 @@ const getUserByKakaoId = async (kakaoId) => {
   }
 };
 
-const createUser = async (kakaoId, userName) => {
+const createUser = async (kakaoId) => {
   try {
-    const [user] = await dataSource.query(
+    const user = await dataSource.query(
       `
         INSERT INTO users (
-            kakao_id,
-            name
+            kakao_id
             ) VALUES (
-                ?, ?
+                ?
             )
     `,
-      [kakaoId, userName]
+      [kakaoId]
     );
     return user;
   } catch (error) {

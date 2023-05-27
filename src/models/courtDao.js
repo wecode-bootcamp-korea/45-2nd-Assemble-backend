@@ -73,6 +73,7 @@ const getCourtList = async (
     const rooms = await dataSource.query(
       `${baseQuery} ${whereCondition} ${sortQuery} ${limitQuery}`
     );
+
     return rooms;
   } catch (error) {
     error = new Error('FAILED_TO_BUILD_FILTER_QUERY');
