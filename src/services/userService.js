@@ -49,7 +49,7 @@ const kakaologin = async (code) => {
 
   const payLoad = { id: user.id };
 
-  const accessToken = jwt.sign(payLoad, process.env.JWT_SECERT);
+  const accessToken = jwt.sign(payLoad, process.env.JWT_SECRET);
 
   return accessToken;
 };

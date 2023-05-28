@@ -2,7 +2,7 @@ const userService = require('../services/userService');
 const { catchAsync } = require('../middlewares/error');
 
 const kakaologin = catchAsync(async (req, res) => {
-  const { code } = req.query;
+  const { code } = req.body;
 
   if (!code) {
     const error = new Error('NO_CODE_PROVIDED');

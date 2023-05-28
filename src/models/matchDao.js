@@ -24,7 +24,7 @@ const getUserLevel = async (userId) => {
 const getGuestMatches = async (userId, currentTime, isExpired) => {
   try {
     const reservationExpired = reservationExpiredBuilder(isExpired);
-    console.log(reservationExpired);
+
     return await dataSource.query(
       `
     SELECT

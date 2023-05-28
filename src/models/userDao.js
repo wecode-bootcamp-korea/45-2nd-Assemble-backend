@@ -8,7 +8,7 @@ const levelEnum = Object.freeze({
 
 const getUserByKakaoId = async (kakaoId) => {
   try {
-    return await dataSource.query(
+    const [user] = await dataSource.query(
       `
         SELECT
             id, 
@@ -21,6 +21,7 @@ const getUserByKakaoId = async (kakaoId) => {
     `,
       [kakaoId]
     );
+    return user;
   } catch (error) {
     error = new Error('DATABASE_CONNECTION_ERROR');
     error.statusCode = 400;
@@ -30,7 +31,7 @@ const getUserByKakaoId = async (kakaoId) => {
 
 const createUser = async (kakaoId, userName) => {
   try {
-    return await dataSource.query(
+    const [user] = await dataSource.query(
       `
         INSERT INTO users (
             kakao_id,
@@ -41,6 +42,7 @@ const createUser = async (kakaoId, userName) => {
     `,
       [kakaoId, userName]
     );
+    return user;
   } catch (error) {
     error = new Error('DATABASE_CONNECTION_ERROR');
     error.statusCode = 400;
@@ -50,7 +52,7 @@ const createUser = async (kakaoId, userName) => {
 
 const getUserById = async (userId) => {
   try {
-    return await dataSource.query(
+    const [user] = await dataSource.query(
       `
         SELECT
           u.id,
@@ -64,6 +66,7 @@ const getUserById = async (userId) => {
       `,
       [userId]
     );
+    return user;
   } catch (error) {
     error = new Error('DATABASE_CONNECTION_ERROR');
     error.statusCode = 400;
@@ -73,7 +76,7 @@ const getUserById = async (userId) => {
 
 const updateUserInfo = async (userId, name, gender, level) => {
   try {
-    await dataSource.query(
+    return await dataSource.query(
       `
       UPDATE users
         SET name = ?, gender = ?, level_id = ?
