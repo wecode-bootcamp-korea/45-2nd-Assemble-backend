@@ -8,6 +8,7 @@ const { validateTokenUserUndefined } = require('../middlewares/auth');
 
 router.get('', validateTokenUserUndefined, matchController.getMatchList);
 router.get('/guest', validateToken, matchController.getGuestMatches);
+router.post('', validateToken, matchController.completeMatch);
 
 module.exports = {
   router,

@@ -34,7 +34,7 @@ const getCourtList = async (
         ct.type,
         ct.is_indoor AS isIndoor,
         c.description,
-        c.is_exclusive isExclusive
+        c.is_exclusive isExclusive,
         ( SELECT
             JSON_ARRAYAGG(
                 JSON_OBJECT(
@@ -42,10 +42,9 @@ const getCourtList = async (
                     'isAvailable', t.is_available
                 ))
             FROM time_slots t
-            WHERE t.court_id = c.id
-        ) timeSlot,
+            WHERE t.court_id = c.id AND DATE(t.time_slot) =${date}
+        ) timeSlots,
         ( SELECT
-            JSON_ARRAYAGG(
                 ci.court_image
             )
         FROM court_images ci

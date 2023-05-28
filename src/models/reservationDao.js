@@ -55,4 +55,27 @@ const getHostReservations = async (userId, currentTime, isExpired, isMatch) => {
   }
 };
 
-module.exports = { getHostReservations };
+const getMatchHostInfo = async (matchId) => {
+  try {
+    return await dataSource.query(
+      `
+      SELECT 
+        r.id,
+        r.reservation_number reservationNumber,
+        r.time_slot timeSlot,
+        r.is_match isMatch,
+        r.host_user_id hostUser
+      FROM reservations r
+      LEFT JOIN matches m ON m.reservation_id = r.id
+      WHERE m.id = ?
+        `,
+      [matchId]
+    );
+  } catch (error) {
+    error = new Error('DATABASE_CONNECITON_ERROR');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
+module.exports = { getHostReservations, getMatchHostInfo };
