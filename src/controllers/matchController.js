@@ -35,7 +35,23 @@ const getGuestMatches = catchAsync(async (req, res) => {
   return res.status(200).json({ data: matches });
 });
 
+const completeMatch = catchAsync(async (req, res) => {
+  const guestUser = req.user.id;
+  const { matchId, paymentKey, amount, orderId } = req.body;
+
+  const match = await matchService.completeMatch(
+    guestUser,
+    matchId,
+    paymentKey,
+    amount,
+    orderId
+  );
+
+  return res.status(200).json({ match: match });
+});
+
 module.exports = {
   getMatchList,
   getGuestMatches,
+  completeMatch,
 };
