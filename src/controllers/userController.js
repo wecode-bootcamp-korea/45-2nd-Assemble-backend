@@ -25,12 +25,24 @@ const getUserById = catchAsync(async (req, res) => {
 
 const updateUserInfo = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const { name, gender, level } = req.body;
+  const { name, gender } = req.body;
+
+  let { level } = req.body;
 
   if (!name || !gender || !level) {
     const error = new Error('KEY_ERROR');
     error.statusCode = 400;
     throw error;
+  }
+
+  if (level == '1') {
+    level = 'ONE';
+  }
+  if (level == '2') {
+    level = 'TWO';
+  }
+  if (level == '3') {
+    level = 'THREE';
   }
 
   await userService.updateUserInfo(userId, name, gender, level);
