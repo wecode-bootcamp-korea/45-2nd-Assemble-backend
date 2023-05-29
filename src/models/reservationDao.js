@@ -8,12 +8,14 @@ const getHostReservations = async (userId, currentTime, isExpired, isMatch) => {
     return await dataSource.query(
       `
     SELECT 
-          r.id,
-          r.reservation_number reservationNumber,
-          r.time_slot timeSlot,
-          r.is_match isMatch,
-          r.host_user_id hostUserId,
-          ps.status paymentStatus,
+          JSON_OBJECT (
+              "id", r.id,
+              "reservationNumber", r.reservation_number,
+              "timeSlot", r.time_slot,
+              "isMatch", r.is_match,
+              "hostUserId", r.host_user_id,
+              "paymentStatus", ps.status
+            ) reservation,
           (SELECT JSON_OBJECT (
           	  "id", c.id,
           	  "name", c.name,

@@ -20,7 +20,7 @@ const getUserById = catchAsync(async (req, res) => {
 
   const userInfo = await userService.getUserById(userId);
 
-  return res.status(200).json({ userInfo });
+  return res.status(200).json(userInfo);
 });
 
 const updateUserInfo = catchAsync(async (req, res) => {
