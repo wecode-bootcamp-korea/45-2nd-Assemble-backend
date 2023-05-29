@@ -82,7 +82,7 @@ const updateUserInfo = async (userId, name, gender, level) => {
         SET name = ?, gender = ?, level_id = ?
       WHERE id = ? 
         `,
-      [name, gender, levelEnum.level, userId]
+      [name, gender, levelEnum[level], userId]
     );
   } catch (error) {
     error = new Error('DATABASE_CONNECTION_ERROR');
