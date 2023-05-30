@@ -12,9 +12,12 @@ const getCourtList = async (
   courtTypeId,
   courtId,
   page,
-  orderBy
+  orderBy,
+  dateForCourt
 ) => {
   try {
+    const dateCondition = builder.dateBuilder(dateForCourt);
+
     const baseQuery = `
     SELECT DISTINCT
         c.id,
@@ -35,21 +38,24 @@ const getCourtList = async (
         ct.is_indoor AS isIndoor,
         c.description,
         c.is_exclusive isExclusive,
-        ( SELECT
-            JSON_ARRAYAGG(
+        COALESCE(
+            (SELECT
+              JSON_ARRAYAGG(
                 JSON_OBJECT(
                     'timeSlot', t.time_slot,
                     'isAvailable', t.is_available
-                ))
-            FROM time_slots t
-            WHERE t.court_id = c.id AND DATE(t.time_slot) =${date}
-        ) timeSlots,
-        ( SELECT
-                ci.court_image
+                )
             )
-        FROM court_images ci
-        WHERE ci.court_id = c.id
-        ) courtImage
+            FROM time_slots t
+            WHERE t.court_id = c.id ${dateCondition}
+            ), JSON_ARRAY()) AS timeSlots,
+        COALESCE(
+            (SELECT
+              JSON_ARRAYAGG(ci.court_image
+            )
+            FROM court_images ci
+            WHERE ci.court_id = c.id
+            ), JSON_ARRAY()) courtImage
     FROM courts c
     LEFT JOIN parkings p ON c.parking_id = p.id
     LEFT JOIN time_slots t ON t.court_id = c.id
@@ -57,6 +63,7 @@ const getCourtList = async (
     LEFT JOIN regions r ON r.id = d.region_id
     LEFT JOIN court_types ct ON c.court_type_id = ct.id
     `;
+
     const whereCondition = builder.courtFilterBuilder(
       districtId,
       date,
@@ -68,11 +75,13 @@ const getCourtList = async (
       courtTypeId,
       courtId
     );
+
     const sortQuery = builder.orderByBuilder(orderBy);
     const limitQuery = builder.limitBuilder(page);
     const rooms = await dataSource.query(
       `${baseQuery} ${whereCondition} ${sortQuery} ${limitQuery}`
     );
+
     return rooms;
   } catch (error) {
     error = new Error('FAILED_TO_BUILD_FILTER_QUERY');
@@ -102,7 +111,14 @@ const getHostingCourts = async (userId) => {
         ct.type,
         ct.is_indoor isIndoor,
         c.description,
-        c.is_exclusive isExclusive 
+        c.is_exclusive isExclusive,
+        ( SELECT
+               JSON_ARRAYAGG(
+                ci.court_image) 
+        FROM court_images ci
+        WHERE ci.court_id = c.id
+        LIMIT 1
+        ) courtImage
       FROM courts c
       JOIN districts d ON c.district_id = d.id
       JOIN parkings p ON c.parking_id = p.id

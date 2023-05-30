@@ -21,21 +21,15 @@ function courtFilterBuilder(
     let dateArr = [];
     dateArr.push(date);
     conditionArr.push(
-      `(DATE(t.time_slot) IN (${dateArr}) AND t.is_available = 1)`
+      `(DATE(t.time_slot) ='${dateArr}' AND t.is_available = 1)`
     );
   }
 
   if (time && date) {
     let dateTimeArr = [];
-
-    for (let i = 0; i < time.length; i++) {
-      dateTimeArr.push(
-        date.substr(0, date.length - 1) + ' ' + time[i].substr(1)
-      );
-    }
-
+    dateTimeArr.push(date.substr(0, date.length) + ' ' + time.substr(0));
     conditionArr.push(
-      `(t.time_slot IN (${[dateTimeArr]}) AND t.is_available = 1)`
+      `(t.time_slot ='${[dateTimeArr]}' AND t.is_available = 1)`
     );
   }
 
@@ -88,6 +82,20 @@ function matchFilterBuilder(date) {
   return whereCondition;
 }
 
+function dateBuilder(dateForCourt) {
+  let conditionArr = [];
+
+  if (dateForCourt) {
+    conditionArr.push(` AND DATE(t.time_slot) ='${dateForCourt}'`);
+  }
+
+  let whereCondition = '';
+  if (conditionArr.length > 0) {
+    whereCondition = `${conditionArr.join(' AND ')}`;
+  }
+  return whereCondition;
+}
+
 function limitBuilder(page, limit) {
   if (!page) page = 1;
 
@@ -128,4 +136,5 @@ module.exports = {
   limitBuilder,
   orderByBuilder,
   reservationExpiredBuilder,
+  dateBuilder,
 };

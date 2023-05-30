@@ -14,6 +14,7 @@ const getCourtList = catchAsync(async (req, res) => {
     courtId,
     page,
     orderBy,
+    dateForCourt,
   } = req.query;
 
   const courts = await courtService.getCourtList(
@@ -27,7 +28,8 @@ const getCourtList = catchAsync(async (req, res) => {
     courtTypeId,
     courtId,
     page,
-    orderBy
+    orderBy,
+    dateForCourt
   );
   return res.status(200).json(courts);
 });
