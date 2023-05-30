@@ -2,24 +2,22 @@ const matchDao = require('../models/matchDao');
 const reservationDao = require('../models/reservationDao');
 const axios = require('axios');
 
-const getMatchList = async (date, page, limit) => {
-  const getMatchList = await matchDao.getMatchList(date, page, limit);
+const getMatchList = async (userId, date, page, limit) => {
+  let userLevel = null;
 
-  return getMatchList;
-};
+  if (userId) {
+    const [getUserLevel] = await matchDao.getUserLevel(userId);
+    userLevel = getUserLevel.level;
+  }
 
-const getMatchListForUser = async (userId, date, page, limit) => {
-  const [getUserLevel] = await matchDao.getUserLevel(userId);
-  const userLevel = getUserLevel.level;
-
-  const getMatchListForUser = await matchDao.getMatchListForUser(
+  const getMatchList = await matchDao.getMatchList(
     userLevel,
     date,
     page,
     limit
   );
 
-  return getMatchListForUser;
+  return getMatchList;
 };
 
 const getGuestMatches = async (userId, currentTime, isExpired) => {
@@ -67,7 +65,6 @@ const completeMatch = async (
 
 module.exports = {
   getMatchList,
-  getMatchListForUser,
   getGuestMatches,
   completeMatch,
 };

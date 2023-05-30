@@ -27,6 +27,7 @@ const getHostReservations = async (userId, currentTime, isExpired, isMatch) => {
               "hasAmenities", c.has_amenities,
               "district", (SELECT d.district FROM districts d WHERE d.id = c.district_id),
               "courtType", (SELECT ct.type FROM court_types ct WHERE ct.id = c.court_type_id),
+              "courtImage", (SELECT court_image FROM court_images WHERE court_id = c.id LIMIT 1),
               "ownerId", c.owner_id ) court
               FROM courts c
               WHERE c.id = r.court_id
