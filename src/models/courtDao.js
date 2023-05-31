@@ -134,7 +134,65 @@ const getHostingCourts = async (userId) => {
   }
 };
 
+const createCourt = async (userId, imageurl, name, address, price) => {
+  try {
+    const court = await dataSource.query(
+      `
+      INSERT INTO courts (
+        address, 
+        price, 
+        parking_id, 
+        rental_equip, 
+        shower_facility, 
+        has_amenities, 
+        district_id, 
+        court_type_id, 
+        owner_id, 
+        description, 
+        latitude,
+        longitude,
+        name,
+        is_exclusive
+      ) VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      )`,
+      [
+        address,
+        price,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        userId,
+        'this is the description',
+        12345,
+        12345,
+        name,
+        1,
+      ]
+    );
+
+    await dataSource.query(
+      `
+      INSERT INTO court_images (
+        court_id,
+        court_image
+      ) VALUES (
+        ?, ?
+      )`,
+      [court.insertId, imageurl]
+    );
+  } catch (error) {
+    error = new Error('DATABASE_CONNECTION_ERROR');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
 module.exports = {
   getCourtList,
   getHostingCourts,
+  createCourt,
 };
