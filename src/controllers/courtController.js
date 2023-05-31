@@ -41,7 +41,22 @@ const getHostingCourts = catchAsync(async (req, res) => {
   return res.status(200).json(courts);
 });
 
+const createCourt = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const image = req.file;
+  const { name, address, price } = req.body;
+  const court = await courtService.createCourt(
+    userId,
+    image,
+    name,
+    address,
+    price
+  );
+  return res.status(201).json({ court });
+});
+
 module.exports = {
   getCourtList,
   getHostingCourts,
+  createCourt,
 };
