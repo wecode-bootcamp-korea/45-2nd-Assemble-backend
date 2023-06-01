@@ -45,6 +45,7 @@ const createCourt = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const image = req.file;
   const { name, address, price } = req.body;
+
   const court = await courtService.createCourt(
     userId,
     image,
