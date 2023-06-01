@@ -104,7 +104,7 @@ const completeReservation = async (
       `SELECT 
         r.id,
         r.reservation_number reservationNumber,
-        r.time_slot timeSlot,
+        DATE_FORMAT(r.time_slot, '%Y-%m-%d %H:00:00') timeSlot,
         r.is_match isMatch,
         ps.status paymentStatus,
         r.host_user_id hostUserId,
