@@ -72,7 +72,7 @@ function matchFilterBuilder(date) {
   let conditionArr = [];
 
   if (date) {
-    conditionArr.push(` AND (DATE(r.time_slot) = ${date})`);
+    conditionArr.push(` AND (DATE(r.time_slot) = '${date}')`);
   }
 
   let whereCondition = '';

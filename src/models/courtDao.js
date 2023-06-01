@@ -20,35 +20,34 @@ const getCourtList = async (
 
     const baseQuery = `
     SELECT DISTINCT
-        c.id,
-        c.name,
-        CAST(c.price AS DECIMAL(10,0)) AS price,
-        c.name,
+        c.id courtId,
+        CAST(c.price AS DECIMAL(10,0)) price,
+        c.name courtName,
         c.address,
         c.longitude,
         c.latitude,
-        c.owner_id AS ownerId,
+        c.owner_id ownerId,
         p.parking,
         d.district,
         r.region,
-        c.rental_equip AS rentalEquip,
-        c.shower_facility AS showerFacility,
-        c.has_amenities AS amenities,
+        c.rental_equip rentalEquip,
+        c.shower_facility showerFacility,
+        c.has_amenities amenities,
         ct.type,
-        ct.is_indoor AS isIndoor,
+        ct.is_indoor isIndoor,
         c.description,
         c.is_exclusive isExclusive,
         COALESCE(
             (SELECT
               JSON_ARRAYAGG(
                 JSON_OBJECT(
-                    'timeSlot', t.time_slot,
+                    'timeSlot', DATE_FORMAT(t.time_slot, '%Y-%m-%d %H:00:00') ,
                     'isAvailable', t.is_available
                 )
             )
             FROM time_slots t
             WHERE t.court_id = c.id ${dateCondition}
-            ), JSON_ARRAY()) AS timeSlots,
+            ), JSON_ARRAY()) timeSlots,
         COALESCE(
             (SELECT
               JSON_ARRAYAGG(ci.court_image
@@ -95,8 +94,8 @@ const getHostingCourts = async (userId) => {
     return await dataSource.query(
       `
       SELECT
-        c.id,
-        c.name,
+        c.id courtId,
+        c.name courtName,
         c.price,
         c.address,
         c.longitude,

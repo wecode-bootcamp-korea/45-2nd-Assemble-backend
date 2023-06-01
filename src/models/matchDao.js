@@ -35,7 +35,7 @@ const getGuestMatches = async (userId, currentTime, isExpired) => {
        		"reservationId", r.id,
        		"reservationNumber", r.reservation_number,
        		"courtId", r.court_id,
-       		"timeSlot", r.time_slot,
+       		"timeSlot", DATE_FORMAT(r.time_slot, '%Y-%m-%d %H:00:00'),
        		"isMatch", is_match,
        		"paymentStatus", ps.status
        		) 
@@ -52,7 +52,7 @@ const getGuestMatches = async (userId, currentTime, isExpired) => {
        		"price", c.price,
        		"rentalEquip", c.rental_equip,
        		"showerFacility", c.shower_facility,
-       		"hasAmenities", c.has_amenities,
+       		"amenities", c.has_amenities,
        		"isExclusive", c.is_exclusive,
        		"parking", p.parking,
        		"district", d.district,
@@ -69,7 +69,7 @@ const getGuestMatches = async (userId, currentTime, isExpired) => {
        (SELECT JSON_OBJECT (
        		"userId", u.id,
        		"kakaoId", u.kakao_id,
-       		"userName", u.name,
+       		"name", u.name,
        		"gender", u.gender,
        		"level", l.level
        		) 
@@ -126,9 +126,9 @@ const getMatchList = async (userLevel, date, page, limit) => {
         LEFT JOIN court_types ct ON ct.id = c.court_type_id
         WHERE c.id = r.court_id
       ) AS courtInfo,
-      r.reservation_number AS reservationNumber,
-      r.time_slot AS timeSlot,
-      r.is_match AS isMatch,
+      r.reservation_number reservationNumber,
+      DATE_FORMAT(r.time_slot, '%Y-%m-%d %H:00:00') timeSlot,
+      r.is_match isMatch,
       ps.status,
       ( SELECT
         JSON_OBJECT(
@@ -250,13 +250,13 @@ const completeMatch = async (guestUser, matchId, reservationInfo, response) => {
       `SELECT 
           r.id,
           r.reservation_number reservationNumber,
-          r.time_slot timeSlot,
+          DATE_FORMAT(r.time_slot, '%Y-%m-%d %H:00:00') timeSlot,
           r.is_match isMatch,
           ps.status paymentStatus,
           r.host_user_id hostUserId,
           (SELECT JSON_OBJECT (
             "courtId", c.id,
-            "name", c.name,
+            "courtName", c.name,
             "address", c.address,
             "longitude", c.longitude,
             "latitude", c.latitude,
