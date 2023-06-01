@@ -41,7 +41,23 @@ const createUser = async (kakaoId) => {
     `,
       [kakaoId]
     );
-    return user;
+
+    const [newUser] = await dataSource.query(
+      `
+          SELECT
+          u.id,
+          u.kakao_id AS kakaoId,
+          u.name,
+          u.gender,
+          l.level
+        FROM users u
+        LEFT JOIN levels l ON u.level_id = l.id
+        WHERE u.id = ?
+          `,
+      [user.insertId]
+    );
+
+    return newUser;
   } catch (error) {
     error = new Error('DATABASE_CONNECTION_ERROR');
     error.statusCode = 400;

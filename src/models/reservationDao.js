@@ -21,22 +21,22 @@ const getHostReservations = async (userId, currentTime, isExpired, isMatch) => {
       `
     SELECT 
           JSON_OBJECT (
-              "id", r.id,
+              "reservationId", r.id,
               "reservationNumber", r.reservation_number,
-              "timeSlot", r.time_slot,
+              "timeSlot", DATE_FORMAT(r.time_slot, '%Y-%m-%d %H:00:00'),
               "isMatch", r.is_match,
               "hostUserId", r.host_user_id,
               "paymentStatus", ps.status
             ) reservation,
           (SELECT JSON_OBJECT (
-          	  "id", c.id,
-          	  "name", c.name,
+          	  "courtId", c.id,
+          	  "courtName", c.name,
               "address", c.address,
 			        "price", c.price,
 			        "parking", (SELECT p.parking FROM parkings p WHERE p.id = c.parking_id),
               "rentalEquip", c.rental_equip,
               "showerFacility", c.shower_facility,
-              "hasAmenities", c.has_amenities,
+              "amenities", c.has_amenities,
               "district", (SELECT d.district FROM districts d WHERE d.id = c.district_id),
               "courtType", (SELECT ct.type FROM court_types ct WHERE ct.id = c.court_type_id),
               "courtImage", (SELECT court_image FROM court_images WHERE court_id = c.id LIMIT 1),
@@ -75,7 +75,7 @@ const getMatchHostInfo = async (matchId) => {
       SELECT 
         r.id,
         r.reservation_number reservationNumber,
-        r.time_slot timeSlot,
+        DATE_FORMAT(r.time_slot, '%Y-%m-%d %H:00:00') timeSlot,
         r.is_match isMatch,
         r.host_user_id hostUser
       FROM reservations r
